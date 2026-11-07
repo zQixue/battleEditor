@@ -1,0 +1,5 @@
+//logger EXE
+fvm dart compile exe lib/CmdLogger.dart -o .\build\windows\runner\Release\logger.exe
+
+
+fvm dart compile exe lib/CmdLogger.dart -o .\build\windows\runner\Release\logger.exe -S F:\xxx.sym

@@ -1,0 +1,387 @@
+//*****************************************************************************
+// 交互协议定义
+//*****************************************************************************
+syntax = "proto3";
+package tutorial;
+
+// import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "com.buf.battlescriptx.transition";
+
+// message Hello {
+//   string message = 1; 
+//   // int32 id = 2;  // Unique ID number for this person.
+//   // string email = 3;
+
+//   enum PhoneType {
+//     MOBILE = 0;
+//     HOME = 1;
+//     WORK = 2;
+//   }
+
+//   message PhoneNumber {
+//     string number = 1;
+//     PhoneType type = 2;
+//   }
+
+//   repeated PhoneNumber phones = 4;
+
+//   // google.protobuf.Timestamp last_updated = 5;
+// }
+
+//包类型枚举
+enum OPackType {
+  //o to u
+  O2U_FullObjects = 0; // 所有obj定位信息
+  O2U_SigleObject = 10; // 单个obj定位信息  
+  O2U_ReloadScript = 20; // 单个obj定位信息
+  O2U_DeleteObject = 30; // 单个obj定位信息
+  O2U_RTRefreshNodeData = 40; // 单个obj定位信息
+  O2U_RTRefreshScriptData = 50; // 单个obj定位信息
+  O2U_DebugInfos = 60; // 单个obj定位信息
+  O2U_StepMode = 75; //发送继续运行到unity
+  O2U_StepForward = 70; //发送继续运行到unity
+  O2U_StepForwardAndStop = 71; //发送继续运行到unity,并关闭脚本
+  O2U_RefreshFunction = 80; //发送继续运行到unity
+  O2U_OpenRuntimeShowObject = 81; //发送打开对象自动展示开关
+  O2U_CloseRuntimeShowObject = 82; //发送关闭对象自动展示开关
+  O2U_EnableBreakPoints = 88; //清除所有断点
+  O2U_DisableBreakPoints = 89; //清除所有断点
+  O2U_AddBreakPoint = 90; //添加断点
+  O2U_RemoveBreakPoint = 96; //移除断点
+  O2U_ClearBreakPoints = 98; //清除所有断点
+
+  O2U_FrameStepMode = 1201 ;//单帧模式  
+  O2U_ExitFrameStepMode = 1203 ;//关闭单帧模式  
+
+  O2U_FocusFrameMode = 1204 ;//任意帧模式  
+  O2U_ExitFocusFrameMode = 1205 ;//关闭任意帧模式  
+  O2U_RuntimeSetTime = 1200 ;//oc 运行时发送时间定位
+  O2U_RunWithScript = 1210 ;//八爪鱼发送运行命令
+
+  O2SO_OpenMLScript = 1220 ;//八爪鱼发送运行命令
+
+  O2U_OpenScene = 1221 ;//打开场景
+  O2U_OpenMap = 1222 ;//打开地图  
+
+  
+  //u to o
+  U2O_UpdateTransform = 100; //unity 数据刷回 八爪鱼
+  U2O_RuntimeState = 101; //运行时实时状态
+  U2O_RuntimeClear = 102; //关闭运行时实时状态
+  U2O_LevelSelected = 103; //打开关卡脚本
+  U2O_FocusNode = 104; //编辑器中定位结点
+  U2O_CreateNode = 120; //编辑器中定位结点
+  U2O_DeleteNode = 122; //编辑器中定位结点
+  U2O_PlayingState = 130; //运行时实时状态
+  U2O_StepBlocked= 140; //发送中断到八爪鱼
+  U2O_VarValues=150;//实时变量数据
+  U2O_ResponceRuntimeSetTime = 1206 ;//运行时发送时间定位反馈
+
+  //mapbuilder
+  
+  //o to u
+  O2U_MAP_SynTime = 1000;  //同步地图物件的信息
+  // O2U_MAP_CreateObject = 1001;  //创建地图物件
+  O2U_MAP_DeleteObject = 1002;  //删除地图物件
+  O2U_MAP_SyncObject = 1003;  //同步地图物件的信息  
+  O2U_MAP_FocusNode = 1004;  //定位剧情编辑器中的节点
+  O2U_MAP_SyncTimeline = 1010;  //同步地图物件的信息  
+  	
+  O2U_MAP_Sync2Unity = 1100;  //Map数据发送给unity，进行同步，以八爪鱼数据为准
+
+  // object table
+  O2U_OT_OPEN_SCENE = 1501;  
+  O2U_OT_CREATE_OBJECT = 1502;
+  O2U_OT_REFRESH_SCENE_WITH_OBJECTS = 1503;
+  O2U_OT_SELECT_OBJECT = 1504;
+  O2U_OT_TRANSFORM_CHANGED = 1505;
+  O2U_OT_CREATE_MAP = 1506;  
+
+
+  U2O_OT_TRANSFORM_CHANGED = 1601;
+  U2O_OT_SELECT_OBJECT = 1602;
+
+  //u to o
+  //unity中新建地图，或者打开地图，向八爪鱼发送select map
+  //八爪鱼收到消息后，创建或打开脚本，然后发送 O2U_MAP_Sync2Unity 消息到unity进行init同步
+  U2O_MAP_SelectMap = 2000;  //创建地图
+  // U2O_MAP_CreateObject = 2001;  //创建地图物件
+  U2O_MAP_DeleteObject = 2002;  //删除地图物件
+  U2O_MAP_SyncObject = 2003;  //刷新地图物件的信息
+  U2O_MAP_FocusNode = 2004;  //定位剧情编辑器中的节点 
+
+  //mlskill
+  O2U_MLSkill_CSVUpdate = 8001; 
+
+  //log 相关
+  U2O_Log = 9001;  //log
+
+  O2U_LOG_NODE_PORT_DATA = 9100;  //通知Unity可以输出节点端口信息
+}
+
+// vector3
+message V3 {
+  float x = 10;
+  float y = 20;
+  float z = 30;
+}
+
+message AutoShowInfo {
+  string objectName = 10;
+  int32 scriptId  = 20;  
+}
+
+message VarInfo {
+  int32 varId = 10;
+  string value = 20; 
+}
+
+message VarPairInfo {
+  string key = 20;
+  string value = 30; 
+}
+
+message MapVarInfo {
+  int32 varId = 10;
+  repeated VarPairInfo pairs = 20;  
+}
+
+message VarData {
+  repeated VarInfo scriptVars = 10;
+  repeated VarInfo agentVars = 20;
+  repeated MapVarInfo agentMapVars = 30;
+}
+
+
+message ObjInfo {
+  int32 increaseId = 5;
+  string guid = 10;  
+  string name = 20;
+  string showName = 25;
+  V3 position = 30;
+  V3 rotation = 40;
+  string prefab = 50;
+  V3 box_size = 60;
+
+  float ex = 70;
+  float ey = 75;
+}
+
+message DebugInfos {  
+  repeated uint32 debugScriptGuids = 10;
+  repeated uint32 stepDebugScriptGuids = 20;
+}
+
+
+
+
+message DebugBlocked {  
+  bool isBlocked = 10;
+  string breakPointKey = 20;
+}
+
+message RefreshFunction {  
+  string path = 10;
+}
+
+message ObjInfos {
+  string guid = 5;
+  repeated ObjInfo objs = 10;
+}
+
+
+message ONodeState {
+  int32 id = 5 ;
+  bool isActive = 10;
+  //int32 triggerCount = 20;
+  bool flashing = 30;
+  //bool outFlashing = 40;
+  map<uint32, string> inParamValues = 50;
+  string debugInfo = 60;
+  bool isEndNode = 70;
+}
+
+message ONodeStates {
+  string scriptName = 5 ;  
+  uint32 id = 6 ;  
+  repeated ONodeState nodes = 20;
+  map<string, uint32> prtTriggerCount = 40;
+  map<string, uint32> prmTriggerCount = 50; 
+  map<string, bool> prtFlashing = 60;
+  map<string, bool> prmFlashing = 70;    
+  VarData varData = 80; 
+  float timelineTime = 90;
+}
+
+message OLevel {
+  string levelGuid = 5 ;
+}
+
+message SimpleNode {
+  string guid = 5 ;
+}
+
+message FocusToNode {
+  string guid = 5 ;
+}
+
+message CopyObject {
+  string copy_guid = 5 ;
+  string guid = 10 ;
+  string typeGuid =20 ;
+  string prefab = 30; 
+}
+
+message NodeDataRTRefresh {
+  uint32 script_hash_id= 5 ;
+  int32 node_index = 10 ;
+  bytes data = 20;
+}
+
+message ScriptDataRTRefresh {
+  uint32 script_hash_id= 5 ;  
+  bytes data = 20;
+}
+
+message PlayingState {
+  bool isPlaying = 10;
+}
+
+
+// 包体外壳
+message OPack {
+  OPackType type = 10;
+  bytes data = 80;
+  uint32 fullLength = 120;
+  uint32 packCount = 130;
+  uint32 packIndex = 140;
+  uint32 guid = 150;  
+}
+
+message BreakPoint {  
+  string breakPointKey = 20;
+}
+
+
+//mapbuilder message
+
+message SyncFieldData {
+  string guid = 10;
+  string value = 20;
+}
+
+message SyncNodeData {
+  string guid = 10;
+  string typeGuid = 20;  
+  float startTime = 30;
+  float endTime = 40;
+  repeated SyncFieldData fieldValues = 90;
+}
+
+
+message NodeTargetData {
+  string guid = 10;
+}
+
+message TimelineSyncData {
+  float time = 10;
+  repeated SyncNodeData nodeValues = 30;
+}
+message TimelineTime {
+  float time = 10;  
+}
+
+//包类型枚举
+enum OLogType {
+  //o to u
+  OLT_Log = 0; //日志
+  OLT_Warnning = 1; //警告
+  OLT_Error = 2; //错误
+}
+message OLog {
+  OLogType type = 10;
+  string message = 20;
+}
+
+message OT_OpenScene {
+  string searchPath = 10;
+  string sceneName = 20;  
+  string editorName = 30;
+}
+
+
+message OT_CreateObject {
+  string guid = 10;
+  string tag = 20;  
+  string searchPath = 30;  
+  string prefab = 40;
+  V3 pos = 50;
+  V3 rot = 60;
+  V3 scale = 70;  
+}
+
+message OT_RefreshSceneWithObject {
+  string guid = 5;
+  string searchPath = 10;
+  string sceneName = 20; 
+  string editorName = 30;
+  repeated OT_CreateObject objects = 40;
+}
+
+message OT_CreateMap {
+  string guid = 10; 
+  string searchPath = 20;  
+  string mapName = 30;
+  int32 mapID = 40;
+  repeated OT_CreateObject objects = 50;
+}
+
+message OT_ObjectTransform {
+  string guid = 10;
+  V3 pos = 50;
+  V3 rot = 60;
+  V3 scale = 70;  
+  bool updatePos = 80;
+  bool updateRot = 90;
+  bool updateScale = 100;
+}
+
+message OT_SelectObject {
+  string guid = 10;
+}
+
+message UpdateCSVList {
+  repeated string tableNames = 10;
+}
+
+message RunScript {
+  string scriptName = 10;
+  string group = 20;
+  repeated string tags = 30;
+}
+
+message OpenMLScript {
+  string scriptName = 10;
+}
+
+//O2U_OpenScene = 1221 ;//打开场景
+message OpenScene {
+  string name = 10;
+  string pathInfo = 20;
+}  
+  
+
+//O2U_OpenMap = 1222 ;//打开地图
+message OpenMap {
+  string name = 10;
+  string pathInfo = 20;
+}    
+  
+
+//O2U_LOG_NODE_PORT_DATA; //通知节点打印端口数据
+message OT_LogNodePortData{
+   int32 scriptId  = 10;  
+   int32 nodeExportId  = 20;  
+   bool needLog = 30;
+}
